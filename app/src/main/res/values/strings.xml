@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">Search</string>
+    <string name="AddFriend">Add Friend</string>
+    <string name="SearchFriend">Search</string>
+    <string name="Search">Search</string>
+    <string name="Item">Item</string>
+
+</resources>
