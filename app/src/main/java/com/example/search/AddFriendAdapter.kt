@@ -11,8 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import de.hdodenhof.circleimageview.CircleImageView
 
-class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):RecyclerView.Adapter<FriendAdapter.ViewHolder>(),Filterable{
-   internal var filterResultList : ArrayList<Friend>
+class AddFriendAdapter (val context: Context,val friendList:ArrayList<Friend>):RecyclerView.Adapter<AddFriendAdapter.ViewHolder>(),Filterable{
+    internal var filterResultList : ArrayList<Friend>
     var fcontext:Context
 
     init {
@@ -67,7 +67,7 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
             .into(holder.image)
 
         holder.friendProfile.setOnClickListener {
-        //    Toast.makeText(fcontext,friend.name,Toast.LENGTH_SHORT).show()
+            //    Toast.makeText(fcontext,friend.name,Toast.LENGTH_SHORT).show()
             val intent= Intent(fcontext,FriendProfile::class.java)
             intent.putExtra("Name",friend.name)
             intent.putExtra("Email",friend.email)
@@ -75,10 +75,10 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
             intent.putExtra("Address",friend.address)
             fcontext.startActivity(intent)
 
+        }
     }
-}
     class ViewHolder(itemView : View):RecyclerView.ViewHolder(itemView){
-         var friendProfile: LinearLayout
+        var friendProfile: LinearLayout
         internal val textViewName:TextView
         internal val textViewAddress:TextView
         internal val textGmail:TextView

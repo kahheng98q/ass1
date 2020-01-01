@@ -4,5 +4,12 @@
     <string name="SearchFriend">Search</string>
     <string name="Search">Search</string>
     <string name="Item">Item</string>
+    <string name="SentFriendRequest">Sent Friend Request</string>
+    <string name="Accecpt">Accecpt</string>
+    <string name="Decline">Decline</string>
+    <string name="Name">Name</string>
+    <string name="Address">Address</string>
+    <string name="Email">Email</string>
+
 
 </resources>
