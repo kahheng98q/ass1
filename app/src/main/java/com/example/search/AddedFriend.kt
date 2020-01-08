@@ -53,12 +53,14 @@ class AddedFriend : AppCompatActivity() {
             //   if(isNetworkAvailable())
 //            CoroutineScope(coroutineContext).launch { }
             getAddedFriend()
+            Thread.sleep(4000)
             return ""
         }
 
         override fun onPreExecute() {
             super.onPreExecute()
             displayLoading()
+
 //            progressDialog=
         }
         override fun onPostExecute(result: String?) {
