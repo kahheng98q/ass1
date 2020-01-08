@@ -2,11 +2,13 @@ package com.example.search
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.bumptech.glide.Glide
 import com.google.firebase.firestore.FirebaseFirestore
 import de.hdodenhof.circleimageview.CircleImageView
@@ -20,6 +22,7 @@ class FriendProfile : AppCompatActivity() {
     lateinit var friendbutton: Button
     lateinit var friendImage: CircleImageView
     val db=FirebaseFirestore.getInstance()
+    var isfriend=0
     //table and self email
     val userTable="New"
     val currentEmail="kh@gmail.com"
@@ -42,7 +45,7 @@ class FriendProfile : AppCompatActivity() {
     var noteself:HashMap<String,Object>
             = HashMap<String, Object>()
 
-    var isfriend=false
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,37 +56,13 @@ class FriendProfile : AppCompatActivity() {
          friendImage=findViewById(R.id.friendProfilePic)
         friendEmail=findViewById(R.id.email)
         displayAddedProfile()
-//diplay user profile
-//        val goToUserData=db.collection(userTable).document(goTo)
-//             goToUserData.get()
-//            .addOnSuccessListener {
-//                    document->
-//                if (document!=null){
-//                    Log.d("exist","Document data:${document.data}")
-//                    friendName.text=document.getString("Name")
-//                    Glide.with(this)
-//                        .asBitmap()
-//                        .load(document.getString("Image"))
-//                        .into(friendImage)
-//                }else{
-//                    Log.d("non exist","Non exist")
-//                }
-//
-//            }
-//            .addOnFailureListener{
-//                    exception ->
-//                Log.d("Error DB","Fail",exception)
-//            }
-        //check the status
 
-        isfriend=checkAddedFriend()
-      //  displayAddedProfile()
-        if(!isfriend){
-            checkRequestFriend()
-        }
+
+        checkAddedFriend()
+        displayLoading()
+
 
     }
-
 
 // onClick button
     fun sendRequest(view: View){
@@ -102,66 +81,74 @@ class FriendProfile : AppCompatActivity() {
                     Toast.makeText(applicationContext,"Friend Request Sent",Toast.LENGTH_SHORT).show()
                     friendbutton.setText(R.string.SentFriendRequest)
                 }
-            note.put(Name,currentName as Object)
-            note.put(Image,currentImage as Object)
-            note.put(Email,currentEmail as Object)
+            noteself.put(Name,currentName as Object)
+            noteself.put(Image,currentImage as Object)
+            noteself.put(Email,currentEmail as Object)
 
-            db.collection(userTable).document(fEmail).collection(request).document(currentEmail).set(note)
+            db.collection(userTable).document(fEmail).collection(request).document(currentEmail).set(noteself)
                 .addOnSuccessListener {
                     Toast.makeText(applicationContext,"Friend Request Sent",Toast.LENGTH_SHORT).show()
                     friendbutton.setText(R.string.SentFriendRequest)
                 }
-        }else{
-            //note.put(statusKey,statusCancel as Object)
+        }else if((friendbutton.text.equals("Sent Friend Request"))){
+
             db.collection(userTable).document(currentEmail).collection(sent).document(fEmail).delete()
                 .addOnSuccessListener {
                     Toast.makeText(applicationContext,"Cancelled friend Request",Toast.LENGTH_SHORT).show()
                     friendbutton.setText(R.string.AddFriend)
                 }
+        }else{
+             val builder=AlertDialog.Builder(this)
+            builder.setTitle("Do you want to detele "+fName+" ?")
+            builder.setPositiveButton("Yes"){dialog, which ->
+                db.collection(userTable).document(currentEmail).collection(added).document(fEmail).delete()
+                db.collection(userTable).document(fEmail).collection(added).document(currentEmail).delete()
+                    .addOnSuccessListener {
+                        Toast.makeText(applicationContext,"Friend Deleted",Toast.LENGTH_SHORT).show()
+                        friendbutton.setText(R.string.AddFriend)
+                    }
+            }
+            builder.setNegativeButton("Cancel"){dialog,which ->
+             //   Toast.makeText(applicationContext,"You cancelled the dialog.",Toast.LENGTH_SHORT).show()
+            }
+
+            val dialog: AlertDialog = builder.create()
+            dialog.show()
         }
 
     }
 
-    fun checkAddedFriend():Boolean{
-        var isfriend = false
+    fun checkAddedFriend(){
         if(intent.hasExtra("Email")) {
             val fEmail=intent.getStringExtra("Email")
             db.collection(userTable).document(currentEmail).collection(added).document(fEmail)
                 .get()
                 .addOnSuccessListener { document ->
-                    if (document != null && document.exists()) {
-                        Toast.makeText(applicationContext, document.id, Toast.LENGTH_SHORT).show()
-                        Log.d("exist", "Document data:${document.data}")
-                        //  if(document.id.equals(goTo)){
-//                        document.id
-                        friendbutton.visibility = View.GONE
-                        isfriend = true
-                        // }
-                    } else {
-                        Log.d("non exist", "Non exist")
-                        //  friendbutton.visibility = View.GONE
-                    }
+                        if (document != null && document.exists()) {
+                       // Toast.makeText(applicationContext, document.id, Toast.LENGTH_SHORT).show()
+                     //   Log.d("exist", "Document data:${document.data}")
+                            System.out.println("1")
+                        friendbutton.setText("Delete Friend")
 
+                    } else {
+                    Log.d("non exist", "Non exist")
+                  }
                 }
-                .addOnFailureListener { exception ->
-                    Log.d("Error DB", "Faill", exception)
-                }
+
 
         }
-        return isfriend
-    }
-    fun checkRequestFriend(){
 
+//        return isfriend
+    }
+    //button
+    fun checkRequestFriend(){
         val fEmail=intent.getStringExtra("Email")
         db.collection(userTable).document(currentEmail).collection(sent).document(fEmail)
             .get()
             .addOnSuccessListener {
                     document->
                 if (document!=null&&document.exists()){
-                   // Toast.makeText(applicationContext,document.id,Toast.LENGTH_SHORT).show()
                     Log.d("exist","Document data:${document.data}")
-                  //  if(document.id.equals(goTo)){
-//                        document.id
                         friendbutton.setText(R.string.SentFriendRequest)
 
                 //    }
@@ -176,12 +163,9 @@ class FriendProfile : AppCompatActivity() {
                 Log.d("Error DB","Faill",exception)
             }
     }
+
     fun displayAddedProfile(){
         if(intent.hasExtra("Email")){
-
-//            var fName=intent.getStringExtra("Name")
-//            var fImage=intent.getStringExtra("Image")
-//            var fAddress=intent.getStringExtra("Address")
             val fEmail=intent.getStringExtra("Email")
             val goToUserData=db.collection(userTable).document(fEmail)
             goToUserData.get()
@@ -189,11 +173,7 @@ class FriendProfile : AppCompatActivity() {
                         document->
                     if (document!=null){
                         Log.d("exist","Document data:${document.data}")
-//                        friendName.text=document.getString("Name")
-//                        Glide.with(this)
-//                            .asBitmap()
-//                            .load(document.getString("Image"))
-//                            .into(friendImage)
+//
                         setProfile(document.getString("Image").toString(),document.getString("Name").toString(),
                             document.getString("Address").toString(),document.getString("Email").toString()
                         )
@@ -208,9 +188,8 @@ class FriendProfile : AppCompatActivity() {
                 }
 
 
-//            setImage(fImage,fName)
         }else{
-         //   Toast.makeText(applicationContext,"GGGGGGGGGGGGGGGG",Toast.LENGTH_SHORT).show()
+
         }
     }
     fun setProfile(Image:String,Name:String,Address:String,Email:String){
@@ -220,5 +199,21 @@ class FriendProfile : AppCompatActivity() {
             .asBitmap()
             .load(Image)
             .into(friendImage)
+    }
+    fun displayLoading(){
+//        Toast.makeText(applicationContext,,Toast.LENGTH_SHORT).show()
+        val builder= android.app.AlertDialog.Builder(this)
+        val dialogView=layoutInflater.inflate(R.layout.progress_dialog,null)
+        builder.setView(dialogView)
+        builder.setCancelable(false)
+        val dialog=builder.create()
+        dialog.show()
+        Handler().postDelayed({dialog.dismiss()
+            Toast.makeText(applicationContext, friendbutton.text.toString(), Toast.LENGTH_SHORT).show()
+            if(!friendbutton.text.toString().equals("Delete Friend")){
+                checkRequestFriend()
+            }
+        },3000)
+
     }
 }

@@ -56,6 +56,13 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
         return filterResultList.size
     }
 
+//    fun displayButton(view: View){
+//        val acceptButton=view.findViewById(R.id.buttonAccept) as Button
+//        val declineButton=view.findViewById(R.id.buttonDecline) as Button
+//        acceptButton.visibility=View.VISIBLE
+//        declineButton.visibility=View.VISIBLE
+//    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val friend:Friend=filterResultList[position]
         holder.textViewName.text=friend.name
@@ -69,6 +76,7 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
         holder.friendProfile.setOnClickListener {
         //    Toast.makeText(fcontext,friend.name,Toast.LENGTH_SHORT).show()
             val intent= Intent(fcontext,FriendProfile::class.java)
+//            intent.putExtra("Activity")
             intent.putExtra("Name",friend.name)
             intent.putExtra("Email",friend.email)
             intent.putExtra("Image",friend.image)
@@ -78,18 +86,25 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
     }
 }
     class ViewHolder(itemView : View):RecyclerView.ViewHolder(itemView){
-         var friendProfile: LinearLayout
+
+        var friendProfile: LinearLayout
         internal val textViewName:TextView
         internal val textViewAddress:TextView
         internal val textGmail:TextView
         internal val image: CircleImageView
+
         init{
+
             textViewName=itemView.findViewById(R.id.textViewName) as TextView
             textViewAddress=itemView.findViewById(R.id.textViewAddress) as TextView
             textGmail=itemView.findViewById(R.id.textViewAddress) as TextView
             friendProfile=itemView.findViewById(R.id.friendProfile) as LinearLayout
             image=itemView.findViewById(R.id.profilePic) as CircleImageView
+
+
+
+            }
+
         }
     }
 
-}

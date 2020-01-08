@@ -2,22 +2,26 @@ package com.example.search
 
 import android.content.Context
 import android.content.Intent
-import android.media.Image
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+
 import android.widget.*
+
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.firebase.firestore.FirebaseFirestore
 import de.hdodenhof.circleimageview.CircleImageView
+//import kotlinx.coroutines.channels.produce
 
-class AddFriendAdapter (val context: Context,val friendList:ArrayList<Friend>):RecyclerView.Adapter<AddFriendAdapter.ViewHolder>(),Filterable{
+class FriendRequestAdapter (val context: Context, val friendList:ArrayList<Friend>):RecyclerView.Adapter<FriendRequestAdapter.ViewHolder>(),Filterable{
     internal var filterResultList : ArrayList<Friend>
     var fcontext:Context
-
+//    private val inflater: LayoutInflater
     init {
         this.fcontext=context
         this.filterResultList=friendList
+//        inflater = LayoutInflater.from(context)
     }
 
     override fun getFilter(): Filter {
@@ -77,19 +81,93 @@ class AddFriendAdapter (val context: Context,val friendList:ArrayList<Friend>):R
 
         }
     }
-    class ViewHolder(itemView : View):RecyclerView.ViewHolder(itemView){
+    inner class ViewHolder(itemView : View):RecyclerView.ViewHolder(itemView){
         var friendProfile: LinearLayout
         internal val textViewName:TextView
         internal val textViewAddress:TextView
         internal val textGmail:TextView
         internal val image: CircleImageView
+        internal val acceptButton:Button
+        protected var declineButton:Button
         init{
+
             textViewName=itemView.findViewById(R.id.textViewName) as TextView
             textViewAddress=itemView.findViewById(R.id.textViewAddress) as TextView
             textGmail=itemView.findViewById(R.id.textViewAddress) as TextView
             friendProfile=itemView.findViewById(R.id.friendProfile) as LinearLayout
             image=itemView.findViewById(R.id.profilePic) as CircleImageView
+            acceptButton=itemView.findViewById(R.id.buttonAccept) as Button
+            declineButton=itemView.findViewById(R.id.buttonDecline) as Button
+
+            acceptButton.visibility=View.VISIBLE
+            declineButton.visibility=View.VISIBLE
+//            acceptButton.setTag(1, itemView)
+//            declineButton.setTag(3, itemView)
+
+            acceptButton.setOnClickListener{
+                AcceptRequest(adapterPosition)
+
+            }
+
+            declineButton.setOnClickListener{
+                declineRequest(adapterPosition)
+
+            }
         }
+
+             }
+    var note:HashMap<String,Object>
+            = HashMap<String, Object>()
+    val db= FirebaseFirestore.getInstance()
+    val userTable="New"
+    val currentEmail="kh@gmail.com"
+    val currentName="Kah Heng"
+    val currentImage="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iIe9gEuJbItE3_azb1sOA29i8Py_A0TaZDTTUKyJoAEVbgYr&s"
+    val request="FriendRequest"
+    val sent="SentFriendRequest"
+    val added="AddedFriend"
+    val Email="Email"
+    val Image="Image"
+    val Name="Name"
+    fun AcceptRequest(position: Int){
+
+        val fEmail=friendList.get(position).email
+
+        note.put("Name",friendList.get(position).name as Object)
+        note.put("Image",friendList.get(position).image as Object)
+        note.put("Email",friendList.get(position).email as Object)
+
+        db.collection(userTable).document(currentEmail).collection(added).document(fEmail).set(note)
+            .addOnSuccessListener {
+                Toast.makeText(context,"Friend Accepted",Toast.LENGTH_SHORT).show()
+
+            }
+        note.put(Name,currentName as Object)
+        note.put(Image,currentImage as Object)
+        note.put(Email,currentEmail as Object)
+
+        db.collection(userTable).document(fEmail).collection(added).document(currentEmail).set(note)
+
+        //note.put(statusKey,statusCancel as Object)
+        db.collection(userTable).document(currentEmail).collection(request).document(fEmail).delete()
+        db.collection(userTable).document(fEmail).collection(sent).document(currentEmail).delete()
+        friendList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyDataSetChanged()
+
+    }
+    fun declineRequest(position: Int){
+
+        val fEmail=friendList.get(position).email
+        db.collection(userTable).document(currentEmail).collection(request).document(fEmail).delete()
+        db.collection(userTable).document(fEmail).collection(sent).document(currentEmail).delete()
+        Toast.makeText(context,"Decline Accepted",Toast.LENGTH_SHORT).show()
+        friendList.removeAt(position)
+        notifyItemRemoved(position)
+        notifyDataSetChanged()
+
+
     }
 
-}
+    }
+

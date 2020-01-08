@@ -22,6 +22,7 @@ class AddFriend : AppCompatActivity() {
     lateinit var selfName: String
     val friends= ArrayList<Friend>()
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_friend)

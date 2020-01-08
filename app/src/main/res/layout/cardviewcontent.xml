@@ -71,7 +71,8 @@
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="21dp"
                 android:text="@string/Accecpt"
-                android:visibility="gone"/>
+                android:visibility="gone"
+              />
 
             <Button
                 android:id="@+id/buttonDecline"
@@ -84,7 +85,10 @@
                 android:layout_toEndOf="@+id/buttonAccept"
                 android:layout_toRightOf="@+id/buttonAccept"
                 android:visibility="gone"
-                android:text="@string/Decline" />
+                android:text="@string/Decline"
+
+                />
+
         </RelativeLayout>
     </androidx.cardview.widget.CardView>
 </LinearLayout>
