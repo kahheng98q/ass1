@@ -56,13 +56,6 @@ class FriendAdapter (val context: Context,val friendList:ArrayList<Friend>):Recy
         return filterResultList.size
     }
 
-//    fun displayButton(view: View){
-//        val acceptButton=view.findViewById(R.id.buttonAccept) as Button
-//        val declineButton=view.findViewById(R.id.buttonDecline) as Button
-//        acceptButton.visibility=View.VISIBLE
-//        declineButton.visibility=View.VISIBLE
-//    }
-
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val friend:Friend=filterResultList[position]
         holder.textViewName.text=friend.name

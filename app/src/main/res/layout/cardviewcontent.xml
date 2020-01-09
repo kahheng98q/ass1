@@ -38,10 +38,10 @@
                 android:text="@string/Name" />
 
             <TextView
-                android:id="@+id/textViewAddress"
+                android:id="@+id/textGmail"
                 android:layout_width="274dp"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textGmail"
+                android:layout_below="@+id/textViewAddress"
                 android:layout_marginStart="27dp"
                 android:layout_marginLeft="27dp"
                 android:layout_marginTop="18dp"
@@ -50,7 +50,7 @@
                 android:text="@string/Address" />
 
             <TextView
-                android:id="@+id/textGmail"
+                android:id="@+id/textViewAddress"
                 android:layout_width="278dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textViewName"

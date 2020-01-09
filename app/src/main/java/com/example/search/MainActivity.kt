@@ -30,7 +30,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 //import okhttp3.internal.wait
 import java.nio.file.ProviderMismatchException
 
-class MainActivity : AppCompatActivity(){
+class MainActivity : AppCompatActivity() {
 
     lateinit var context: Context
 
@@ -43,11 +43,12 @@ class MainActivity : AppCompatActivity(){
 
         super.onCreate(savedInstanceState)
         @Suppress("UNUSED_VARIABLE")
-//        setContentView(R.layout.activity_main)
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+
+        val binding =
+            DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
         drawerLayout = binding.drawerLayout
         val navController = this.findNavController(R.id.myNavHostFragment)
-        //  NavigationUI.setupActionBarWithNavController(this,navController)
+
         NavigationUI.setupActionBarWithNavController(this, navController, drawerLayout)
         NavigationUI.setupWithNavController(binding.navView, navController)
 
@@ -57,8 +58,13 @@ class MainActivity : AppCompatActivity(){
         val navController = this.findNavController(R.id.myNavHostFragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
-
-
-
+    override fun onBackPressed() {
+        //the code is beautiful enough without comments
+        if (drawer_layout.isDrawerOpen(GravityCompat.START)) {
+            drawer_layout.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
 
 }
